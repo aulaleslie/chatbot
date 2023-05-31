@@ -18,10 +18,15 @@ func NewClientHandler(externalClient *http.Client) IWhatsappClient {
 	}
 }
 
-func (handler *ClientHandler) SendMessageText(ctx context.Context, facebookConfig *config.FacebookConf, destinationNumber, message string) (bool, error) {
+func (handler *ClientHandler) SendMessageText(ctx context.Context, facebookConfig *config.FacebookConf, requestBody WebHookPayload) (bool, error) {
 	log.Debug().Msg("[WhatsappCallback] entering whatsapp client text...")
 
-	messagePayload := GetMessagePayloadTypeText(destinationNumber, message)
+	messageAndDestinationNumber := getMessageAndDestinationNumber(requestBody)
+	if messageAndDestinationNumber == nil {
+		return false, errors.New("could not obtain parameter")
+	}
+
+	messagePayload := GetMessagePayloadTypeText(messageAndDestinationNumber.DestinationNumber, messageAndDestinationNumber.Message)
 	jsonByte, err := json.Marshal(messagePayload)
 	if err != nil {
 		return false, err
@@ -48,10 +53,15 @@ func (handler *ClientHandler) SendMessageText(ctx context.Context, facebookConfi
 	return true, nil
 }
 
-func (handler *ClientHandler) SendMessageAudio(ctx context.Context, facebookConfig *config.FacebookConf, destinationNumber, audioId string) (bool, error) {
+func (handler *ClientHandler) SendMessageAudio(ctx context.Context, facebookConfig *config.FacebookConf, requestBody WebHookPayload) (bool, error) {
 	log.Debug().Msg("[WhatsappCallback] entering whatsapp client audio...")
 
-	messagePayload := GetMessagePayloadTypeAudio(destinationNumber, audioId)
+	messageAndDestinationNumber := getMessageAndDestinationNumber(requestBody)
+	if messageAndDestinationNumber == nil {
+		return false, errors.New("could not obtain parameter")
+	}
+
+	messagePayload := GetMessagePayloadTypeAudio(messageAndDestinationNumber.DestinationNumber, facebookConfig.AudioId)
 	jsonByte, err := json.Marshal(messagePayload)
 	if err != nil {
 		return false, err
@@ -77,4 +87,28 @@ func (handler *ClientHandler) SendMessageAudio(ctx context.Context, facebookConf
 	}
 
 	return true, nil
+}
+
+func getMessageAndDestinationNumber(webhookPayload WebHookPayload) *MessageAndDestinationNumber {
+	if len(webhookPayload.Entry) > 0 {
+		entry := webhookPayload.Entry[0]
+
+		if len(entry.Changes) > 0 {
+			change := entry.Changes[0]
+
+			if len(change.Value.Messages) > 0 {
+				message := change.Value.Messages[0]
+
+				log.Debug().Msg(message.From)
+				log.Debug().Msg(message.Text.Body)
+
+				return &MessageAndDestinationNumber{
+					DestinationNumber: message.From,
+					Message:           message.Text.Body,
+				}
+			}
+		}
+	}
+
+	return nil
 }

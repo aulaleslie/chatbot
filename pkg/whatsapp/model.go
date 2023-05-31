@@ -24,20 +24,20 @@ type Change struct {
 }
 
 type Value struct {
-	MessagingProduct string    `json:"messagingProduct"`
+	MessagingProduct string    `json:"messaging_product"`
 	Metadata         Metadata  `json:"metadata"`
 	Contacts         []Contact `json:"contacts"`
 	Messages         []Message `json:"messages"`
 }
 
 type Metadata struct {
-	DisplayPhoneNumber string `json:"displayPhoneNumber"`
-	PhoneNumberID      string `json:"phoneNumberId"`
+	DisplayPhoneNumber string `json:"display_phone_number"`
+	PhoneNumberID      string `json:"phone_number_id"`
 }
 
 type Contact struct {
 	Profile Profile `json:"profile"`
-	WaID    string  `json:"waId"`
+	WaID    string  `json:"wa_id"`
 }
 
 type Profile struct {
@@ -46,14 +46,28 @@ type Profile struct {
 
 type Message struct {
 	From      string   `json:"from"`
-	Id        string   `json:"to"`
+	Id        string   `json:"id"`
 	Timestamp string   `json:"timestamp"`
-	Text      TextBody `json:"text"`
+	Text      Text     `json:"text,omitempty"`
+	Reaction  Reaction `json:"reaction,omitempty"`
+	Image     Image    `json:"image,omitempty"`
 	Type      string   `json:"type"`
 }
 
-type TextBody struct {
+type Text struct {
 	Body string `json:"body"`
+}
+
+type Reaction struct {
+	MessageId string `json:"message_id"`
+	Emoji     string `json:"emoji"`
+}
+
+type Image struct {
+	Caption  string `json:"caption"`
+	MimeType string `json:"mime_type"`
+	Sha256   string `json:"sha256"`
+	Id       string `json:"id"`
 }
 
 type CallbackHandler struct {
@@ -72,8 +86,8 @@ type CallbackPayload struct {
 }
 
 type IWhatsappClient interface {
-	SendMessageText(ctx context.Context, facebookConfig *config.FacebookConf, destinationNumber, message string) (bool, error)
-	SendMessageAudio(ctx context.Context, facebookConfig *config.FacebookConf, destinationNumber, audioId string) (bool, error)
+	SendMessageText(ctx context.Context, facebookConfig *config.FacebookConf, requestBody WebHookPayload) (bool, error)
+	SendMessageAudio(ctx context.Context, facebookConfig *config.FacebookConf, requestBody WebHookPayload) (bool, error)
 }
 
 type ClientHandler struct {
@@ -133,4 +147,9 @@ func GetMessagePayloadTypeAudio(destinationNumber, audioId string) MessagePayloa
 			Id: audioId,
 		},
 	}
+}
+
+type MessageAndDestinationNumber struct {
+	Message           string
+	DestinationNumber string
 }
