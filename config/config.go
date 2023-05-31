@@ -50,7 +50,7 @@ func Reload(override *string) error {
 	log.Info().Msgf("Starting server with runtime environment: %s", runtimeEnvironment)
 	log.Info().Msgf("Loading config file: %s", confPath)
 
-	data, err := newConfData("C:\\Workspace\\chatbot\\configs\\local_config.json")
+	data, err := newConfData(confPath)
 	if err != nil {
 		log.Error().Err(err).Msg("error while reading config file")
 		return err

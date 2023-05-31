@@ -1,0 +1,11 @@
+{
+    "server": {
+        "listenPort": "8080"
+    },
+    "facebook": {
+        "requestUrl": "${FACEBOOK_REQUEST_URL}",
+        "requestToken": "${FACEBOOOK_REQUEST_TOKEN}",
+        "audioId": "${FACEBOOK_AUDIO_ID}",
+        "verifyToken": "${FACEBOOK_VERIFY_TOKEN}"
+    }
+}
