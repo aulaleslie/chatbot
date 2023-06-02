@@ -1,11 +1,11 @@
 {
     "server": {
-        "listenPort": "8090"
+        "listenPort": "8080"
     },
     "facebook": {
-        "requestUrl": "https://graph.facebook.com/v16.0/124132037336380/messages",
-        "requestToken": "EAAZAL3ZAKc3cUBAHNteLlQzy3ZCtozWtLI0irTzq9ceItlUCXGLMEmxvQnWCx2GoN2FVhE1gNneSD2dm63se7YdOe0nRKqzTRcdYhtooDspVoetBpymAwqiWcpKLXZB84qdH7ppZCdadg7kVZBeOmAcOCw7Tp5gjUqROmFeOcMljsx8IM1eXPxZCVOwOgmmMuYAQYxFZBjg73vTGyYc0yojOv2IkOHCLVrUZD",
-        "audioId": "663493468949233",
-        "verifyToken": "verifytokenyangsangatrumit"
+        "requestUrl": "${FACEBOOK_REQUEST_URL}",
+        "requestToken": "${FACEBOOOK_REQUEST_TOKEN}",
+        "audioId": "${FACEBOOK_AUDIO_ID}",
+        "verifyToken": "${FACEBOOK_VERIFY_TOKEN}"
     }
 }
