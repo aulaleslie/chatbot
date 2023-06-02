@@ -9,6 +9,16 @@ const (
 type confData struct {
 	Server   serverConf   `json:"server,omitempty"`
 	Facebook FacebookConf `json:"facebook,omitempty"`
+	Database DatabaseConf `json:"database,omitempty"`
+}
+
+type DatabaseConf struct {
+	Postgres PostgresConf `json:"postgres,omitempty"`
+	Type     string       `json:"type"`
+}
+
+type PostgresConf struct {
+	ConnectionString string `json:"connectionString"`
 }
 
 type FacebookConf struct {

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"chatbot/pkg/db"
 	chatbotlog "chatbot/pkg/log"
 
 	"github.com/gorilla/mux"
@@ -28,6 +29,19 @@ func Run() error {
 
 	chatbotlog.InitLogging()
 
+	database, dbHandler, err := db.ConnectDB(config.NewDatabaseConfig())
+	if err != nil {
+		log.Error().Err(err).Msg("error connecting database")
+		return err
+	}
+
+	models := db.GetAllModels()
+	err = database.AutoMigrate(models...)
+	if err != nil {
+		log.Error().Err(err).Msg("error run migration")
+		return err
+	}
+
 	externalClientTLSConfig := &tls.Config{
 		Renegotiation: tls.RenegotiateOnceAsClient,
 	}
@@ -43,7 +57,7 @@ func Run() error {
 	}
 
 	muxRouter := mux.NewRouter()
-	if err := router.AddHandlers(muxRouter, externalClient); err != nil {
+	if err := router.AddHandlers(muxRouter, externalClient, dbHandler); err != nil {
 		log.Error().Err(err).Msg("unable to setup server handler. exiting")
 		return err
 	}

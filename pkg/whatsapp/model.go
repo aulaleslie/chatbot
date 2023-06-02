@@ -2,6 +2,7 @@ package whatsapp
 
 import (
 	"chatbot/config"
+	"chatbot/pkg/db"
 	"context"
 	"net/http"
 )
@@ -73,6 +74,7 @@ type Image struct {
 type CallbackHandler struct {
 	facebookConfig *config.FacebookConf
 	client         IWhatsappClient
+	dbHandler      db.IDatabaseAdapter
 }
 
 type VerificationHandler struct {

@@ -70,6 +70,20 @@ func NewFacebookConfig() *FacebookConf {
 	}
 }
 
+func NewDatabaseConfig() *DatabaseConf {
+	switch cfg.Database.Type {
+	case "postgres":
+		return &DatabaseConf{
+			Postgres: PostgresConf{
+				ConnectionString: cfg.Database.Postgres.ConnectionString,
+			},
+			Type: cfg.Database.Type,
+		}
+	default:
+		return nil
+	}
+}
+
 func GetListenPort() string {
 	return cfg.Server.ListenPort
 }
