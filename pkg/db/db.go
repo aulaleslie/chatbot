@@ -22,7 +22,7 @@ func ConnectDB(databaseConfig *config.DatabaseConf) (*gorm.DB, IDatabaseAdapter,
 	}
 
 	if err != nil {
-		log.Warn().Err(err).Msgf("[ConnectDB] there is an error while connecting to DB: %d", err.Error())
+		log.Warn().Err(err).Msgf("[ConnectDB] there is an error while connecting to DB: %s", err.Error())
 		return nil, nil, err
 	}
 

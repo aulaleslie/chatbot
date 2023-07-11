@@ -3,33 +3,30 @@ package whatsapp
 import (
 	"chatbot/config"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func NewVerificationHandler(config *config.FacebookConf, client IWhatsappClient) http.Handler {
-	return &VerificationHandler{
-		facebookConfig: config,
-		client:         client,
-	}
-}
+func NewVerificationHandler(config *config.FacebookConf, client IWhatsappClient) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		challenge := c.Query("hub.challenge")
+		verifyToken := c.Query("hub.verify_token")
 
-func (handler VerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+		// TODO: cek parameter verify token sama dengan yang ada di config
+		if verifyToken != config.VerifyToken {
+			http.Error(c.Writer, "invalid verify token", http.StatusBadRequest)
+			return
+		}
 
-	challenge := r.URL.Query().Get("hub.challenge")
-	verifyToken := r.URL.Query().Get("hub.verify_token")
+		// TODO: kirim balik value hub.challenge sebagai response
+		c.Writer.Header().Set("Content-Type", "application/json")
+		response := []byte(challenge)
+		_, err := c.Writer.Write(response)
+		c.Writer.WriteHeader(http.StatusCreated)
+		if err != nil {
+			return
+		}
 
-	// TODO: cek parameter verify token sama dengan yang ada di config
-	if verifyToken != handler.facebookConfig.VerifyToken {
-		http.Error(w, "invalid verify token", http.StatusBadRequest)
-		return
-	}
-
-	// TODO: kirim balik value hub.challenge sebagai response
-	w.Header().Set("Content-Type", "application/json")
-	response := []byte(challenge)
-	_, err := w.Write(response)
-	w.WriteHeader(http.StatusCreated)
-	if err != nil {
-		return
 	}
 
 }

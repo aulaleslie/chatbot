@@ -6,14 +6,14 @@ import (
 	"chatbot/pkg/whatsapp"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func AddHandlers(router *mux.Router, externalClient *http.Client, databaseHandler db.IDatabaseAdapter) error {
+func AddHandlers(router *gin.Engine, externalClient *http.Client, databaseHandler db.IDatabaseAdapter) error {
 
 	facebookConf := config.NewFacebookConfig()
 	whatsappClient := whatsapp.NewClientHandler(externalClient)
-	router.Handle(whatsapp.WebhooksEndpoint, whatsapp.NewCallbackHandler(facebookConf, whatsappClient, databaseHandler)).Methods(http.MethodPost)
-	router.Handle(whatsapp.WebhooksEndpoint, whatsapp.NewVerificationHandler(facebookConf, whatsappClient)).Methods(http.MethodGet)
+	router.POST(whatsapp.WebhooksEndpoint, whatsapp.NewCallbackHandler(facebookConf, whatsappClient, databaseHandler))
+	router.GET(whatsapp.WebhooksEndpoint, whatsapp.NewVerificationHandler(facebookConf, whatsappClient))
 	return nil
 }

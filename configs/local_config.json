@@ -7,5 +7,11 @@
         "requestToken": "${FACEBOOOK_REQUEST_TOKEN}",
         "audioId": "${FACEBOOK_AUDIO_ID}",
         "verifyToken": "${FACEBOOK_VERIFY_TOKEN}"
+    },
+    "database": {
+        "postgres": {
+            "connectionString": "postgresql://postgres:Standar123@localhost:5432/postgres?sslmode=disable"
+        },
+        "type": "postgres"
     }
 }

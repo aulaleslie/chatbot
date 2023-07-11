@@ -5,14 +5,13 @@ import (
 	"chatbot/router"
 	"context"
 	"crypto/tls"
-	"errors"
 	"net/http"
 	"time"
 
 	"chatbot/pkg/db"
 	chatbotlog "chatbot/pkg/log"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
 
@@ -56,14 +55,15 @@ func Run() error {
 		},
 	}
 
-	muxRouter := mux.NewRouter()
-	if err := router.AddHandlers(muxRouter, externalClient, dbHandler); err != nil {
+	// muxRouter := mux.NewRouter()
+	ginRouter := gin.Default()
+	if err := router.AddHandlers(ginRouter, externalClient, dbHandler); err != nil {
 		log.Error().Err(err).Msg("unable to setup server handler. exiting")
 		return err
 	}
 
 	var srv *http.Server
-	if srv, err = createServer(muxRouter); err != nil {
+	if srv, err = createServer(ginRouter); err != nil {
 		log.Error().Err(err).Msg("unable to create server. exiting.")
 		return err
 	}
@@ -77,19 +77,14 @@ func Run() error {
 	return nil
 }
 
-func createServer(h http.Handler) (*http.Server, error) {
-	if h == nil {
-		return nil, errors.New("missing server mux")
-	}
-
+func createServer(router *gin.Engine) (*http.Server, error) {
 	serverPort := ":" + config.GetListenPort()
+
 	srv := &http.Server{
 		Addr:         serverPort,
-		Handler:      h,
-		WriteTimeout: 60 * time.Second,
+		Handler:      router,
 		ReadTimeout:  15 * time.Second,
-		IdleTimeout:  30 * time.Second,
+		WriteTimeout: 15 * time.Second,
 	}
-
 	return srv, nil
 }
